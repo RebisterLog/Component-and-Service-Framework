@@ -2,9 +2,15 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local Schemas = ReplicatedStorage.Shared.Schemas
+
 local PlayerComponent = require(ServerScriptService.Server.Components.PlayerComponent)
 local ComponentSystem = require(ReplicatedStorage.Shared.include.ComponentSystem)
 local Lapis = require(ReplicatedStorage.Shared.include.Lapis)
+
+-- Shemas for player data
+local PlayerSaveData = require(Schemas.PlayerSaveData)
+local PlayerDynamicData = require(Schemas.PlayerDynamicData)
 
 local PlayersService: {
     Players: {[Player]: typeof(PlayerComponent)},
@@ -33,6 +39,10 @@ function PlayersService:RemovePlayer(player)
 end
 
 function PlayersService:onStart()
+    self.PlayerCollection = Lapis.createCollection("TLAData", {
+        defaultData = PlayerSaveData,
+    })
+
     Players.PlayerAdded:Connect(function(player)
         self:AddPlayer(player)
     end)
