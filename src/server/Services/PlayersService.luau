@@ -1,22 +1,27 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local PlayerComponent = require(ServerScriptService.Server.Components.PlayerComponent)
+local ComponentSystem = require(ReplicatedStorage.Shared.include.ComponentSystem)
+local Lapis = require(ReplicatedStorage.Shared.include.Lapis)
 
 local PlayersService: {
     Players: {[Player]: typeof(PlayerComponent)},
+    PlayerCollection: Lapis.Collection<{}>,
 
     AddPlayer: (self, player: Player) -> (),
     RemovePlayer: (self, player: Player) -> (),
 } = {
     Players = {},
+    PlayerCollection = {}
 }
 PlayersService.__index = PlayersService
 
 function PlayersService:AddPlayer(player)
     if self.Players[player] then return end
 
-    local component = PlayerComponent.new(player)
+    local component = ComponentSystem:AddComponent(player, PlayerComponent)
     self.Players[player] = component
 end
 
