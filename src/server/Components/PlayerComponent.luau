@@ -19,12 +19,34 @@ local CharmSync = require(ReplicatedStorage.Shared.include["charm-sync"])
 local RequestSyncEvent = Network.get("RequestSync")
 local SyncEvent = Network.get("SyncData")
 
+local PLAYER_MODULES_FOLDER = ServerScriptService.Server.PlayerModules
+
 type Props = {
     document: Lapis.Document<typeof(PlayerSaveData)>?,
     data: Charm.Atom<typeof(PlayerSaveData) & typeof(PlayerDynamicData)>,
     syncer: CharmSync.ServerSyncer?,
     atom: Charm.Atom<typeof(PlayerSaveData) & typeof(PlayerDynamicData)>,
+    UserId: number,
+
+    _modules: {[string]: {}}
 }
+
+export type PlayerModule = {
+    Priority: number,
+    player: componentTypes.ComponentClass<Player> & Props,
+    onStart: () -> (),
+    onDestroy: () -> ()
+}
+
+local function sortElementsByPriority(arr: { {
+	Priority: number?,
+} }): typeof(arr)
+	table.sort(arr, function(a, b)
+		return (a.Priority or 0) > (b.Priority or 0)
+	end)
+
+	return arr
+end
 
 local function ExcludeTableKeys(tblToClear, blacklistedKeys)
     local exitTable = {}
@@ -42,6 +64,18 @@ local PlayerComponent = ClassSystem.Create("PlayerComponent").extends(Component)
 
 function PlayerComponent:onStart()
     print("[PlayerComponent] Starting", self.instance.Name)
+
+    -- Shortcut to get user id
+    self.UserId = self.instance.UserId
+
+    self._modules = {}
+    for i, module: ModuleScript in PLAYER_MODULES_FOLDER:GetChildren() do
+        if not module:IsA("ModuleScript") then continue end
+
+        local moduleInfo = require(module)
+        moduleInfo["player"] = self
+        self._modules[module.Name] = moduleInfo
+    end
 end
 
 function PlayerComponent:onDestroy()
@@ -78,6 +112,16 @@ function PlayerComponent:Init()
         if player ~= self.instance then return end
         self.syncer:hydrate(player)
     end)
+
+    self:InitModules()
+end
+
+function PlayerComponent:InitModules()
+    local modules = sortElementsByPriority(self._modules)
+
+    for _, module in modules do
+        module:onStart()
+    end
 end
 
 function PlayerComponent:LoadDataDocument(document: Lapis.Document<typeof(PlayerSaveData)>)

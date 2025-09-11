@@ -28,7 +28,10 @@ PlayersService.__index = PlayersService
 function PlayersService:AddPlayer(player)
     if self.Players[player] then return end
 
+    print(`[Main] Adding player {player.Name}`)
     local component = ComponentSystem:AddComponent(player, PlayerComponent)
+    self.Players[player] = component
+
     self.PlayerCollection
         :load(`Player_{player.UserId}`, { player.UserId })
         :andThen(function(document)
@@ -47,8 +50,6 @@ function PlayersService:AddPlayer(player)
 			warn(`[Main] Player {player.Name}'s data failed to load: {message}`)
 			player:Kick("Data failed to load.")
 		end)
-
-    self.Players[player] = component
 end
 
 function PlayersService:RemovePlayer(player)

@@ -19,7 +19,6 @@ local ComponentSystem: {
 ComponentSystem.__index = ComponentSystem
 
 function ComponentSystem:AddComponent<T>(instance: T, component: types.ComponentClass<T>)
-	local newComponent = component.new(instance)
 	if not self.instances[instance] then
 		self.instances[instance] = {}
 	end
@@ -28,6 +27,12 @@ function ComponentSystem:AddComponent<T>(instance: T, component: types.Component
 		return warn("[ComponentSystem] This instance already has this component")
 	end
 
+	local newComponent = component.new(instance)
+
+	newComponent.Destroyed:Connect(function()
+		self.instances[instance][tostring(component)] = nil
+	end)
+	
 	self.instances[instance][tostring(component)] = newComponent
 
 	return newComponent

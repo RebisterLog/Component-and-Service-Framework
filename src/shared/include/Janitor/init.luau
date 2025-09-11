@@ -128,7 +128,7 @@ local Janitors = setmetatable({} :: {[Private]: {[any]: any}}, {__mode = "k"})
 ]=]
 
 --[=[
-	Whether or not you want to suppress the re-destroying
+	Whether or not you want to suppress the re-Destroyed
 	of instances. Default is false, which is the original
 	behavior.
 
@@ -860,7 +860,7 @@ Private.__call = Cleanup
 local function LinkToInstance(self: Private, object: Instance, allowMultiple: boolean?): RBXScriptConnection
 	local indexToUse = if allowMultiple then newproxy(false) else LinkToInstanceIndex
 
-	return Add(self, object.Destroying:Connect(function()
+	return Add(self, object.Destroyed:Connect(function()
 		Cleanup(self)
 	end), "Disconnect", indexToUse)
 end

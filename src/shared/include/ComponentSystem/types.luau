@@ -1,3 +1,4 @@
+local Signal = require(script.Parent.Signal)
 local ClassSystem = require(script.Parent.ClassSystem)
 
 type Implements<T> = {
@@ -11,6 +12,7 @@ type Methods<T> = {
 
 type Props<T> = {
     instance: T;
+    Destroyed: Signal.Signal;
 }
 
 export type ComponentClass<T = Instance> = ClassSystem.Class<Methods<T>, Implements<T>, Props<T>, T>
