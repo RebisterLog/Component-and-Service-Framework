@@ -1,3 +1,3 @@
 return {
-    
+    Money = 0,
 }

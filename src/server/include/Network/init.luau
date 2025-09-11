@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Promise = require(script.Promise)
 local Remote = require(script.Remote)
 local RemotesEnum = require(ReplicatedStorage.Shared.include.Network.RemotesEnum)
+local types = require(script.types)
 
 local Network: NetworkData = {
     isRemotesCreated = false,
@@ -17,6 +18,7 @@ type NetworkData = {
 }
 
 export type Network = setmetatable<NetworkData, typeof(Network)>
+export type RequestData = types.RequestData
 
 function Network:CreateRemotes()
     print("[Network] Creating remotes")
@@ -33,7 +35,7 @@ function Network:CreateRemotes()
     print("[Network] Remotes created")
 end
 
-function Network.get(name)
+function Network.get(name: string)
     local remote = Network._remotes[name]
     if not remote then return warn("[Network] Remote not found: %s", name) end
     return remote

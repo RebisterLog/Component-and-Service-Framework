@@ -9,7 +9,8 @@ local function makeEnum<T>(arr: {T}): { [T]: T }
 end
 
 return makeEnum({
-    "Replica", -- For replication of player data and game data
+    "RequestSync", -- For replication of player data and game data
+    "SyncData",
 
     "StartVFX", -- VFX's stuff
     "StopVFX",

@@ -34,7 +34,7 @@ type ServerOptions = {
 	autoSerialize: boolean?,
 }
 
-type ServerSyncer = {
+export type ServerSyncer = {
 	--[=[
 		Sets up a subscription to each atom that schedules a patch to be sent to
 		the client whenever the state changes. When a change occurs, the `callback`

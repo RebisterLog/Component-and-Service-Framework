@@ -19,7 +19,7 @@ function Remote:Connect(listener: (...any) -> ())
     end
 end
 
-type RequestData = {
+export type RequestData = {
     args: {any}, -- Arguments to send
 
     include: {Player}, -- Arrays of exluded/included players
@@ -30,6 +30,9 @@ type RequestData = {
 }
 
 function Remote:Fire(data: RequestData)
+    data.exclude = data.exclude or {}
+    data.include = data.include or {}
+    data.args = data.args or {}
     -- If it's an exclude request
     if #data.exclude > 0 then
         local players: {Player} = Players:GetPlayers()
@@ -87,7 +90,7 @@ function Remote.new(instance: RemoteEvent)
 
     instance.OnServerEvent:Connect(function(player, ...)
         for _, listener in remote._listeners do
-            listener(...)
+            listener(player, ...)
         end
     end)
 
